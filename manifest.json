@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Input Box Opener",
+  "version": "1.0",
+  "permissions": ["activeTab", "scripting"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "open_input_box": {
+      "suggested_key": {
+        "default": "Alt+S"
+      },
+      "description": "Open input box"
+    }
+  },
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
