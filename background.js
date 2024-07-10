@@ -40,31 +40,20 @@ function createInputBox() {
   document.body.appendChild(inputContainer);
   input.focus();
 
-  const handleInputSubmit = async () => {
-    const apiKey = localStorage.getItem('openai-api-key');
+   const handleInputSubmit = async () => {
     const question = input.value;
-
-    if (!apiKey) {
-      alert('API key is not set');
-      return;
-    }
     if (!question) {
       alert('Please enter a question');
       return;
     }
 
     try {
-     const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('http://localhost:3000/query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
         },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: question }],
-          max_tokens: 150,
-        }),
+        body: JSON.stringify({ question }),
       });
 
       if (!response.ok) {
@@ -72,13 +61,13 @@ function createInputBox() {
       }
 
       const data = await response.json();
-      console.log('API Response:', data); // Debugging line
-      alert(data.choices[0].text);
+      alert(data.answer);
     } catch (error) {
       console.error('Error:', error);
       alert('An error occurred while processing your request.');
     }
   };
+
 
   // Handle Enter key press in the input field
   input.addEventListener("keydown", (event) => {
