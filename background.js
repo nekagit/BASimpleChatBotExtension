@@ -54,19 +54,25 @@ function createInputBox() {
     }
 
     try {
-      const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
+     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          prompt: question,
+          model: 'gpt-3.5-turbo',
+          messages: [{ role: 'user', content: question }],
           max_tokens: 150,
         }),
       });
 
+      if (!response.ok) {
+        throw new Error('Failed to fetch');
+      }
+
       const data = await response.json();
+      console.log('API Response:', data); // Debugging line
       alert(data.choices[0].text);
     } catch (error) {
       console.error('Error:', error);
