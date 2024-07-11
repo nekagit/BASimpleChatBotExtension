@@ -4,7 +4,8 @@ import fetch from "node-fetch";
 import cors from "cors"
 
 const corsOptions = {
-  origin: 'chrome-extension://lpnlefhbcibnafkocpgmaogpgpfemmjh',
+  // origin: 'chrome-extension://lpnlefhbcibnafkocpgmaogpgpfemmjh',
+   origin: true,
 }
 
 const app = express();
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 app.use(cors(corsOptions));
+
 async function queryLocalLLM(question) {
   const response = await fetch("http://localhost:11434/api/generate", {
     method: "POST",
@@ -21,32 +23,24 @@ async function queryLocalLLM(question) {
     body: JSON.stringify({
       model: "llama3",
       prompt: question,
-      stream: true
+      stream: true,
     }),
   });
 
   let fullResponse = "";
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
+  const text = await response.text();
+  const lines = text.split('\n').filter(line => line.trim() !== '');
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    
-    const chunk = decoder.decode(value);
-    const lines = chunk.split('\n').filter(line => line.trim() !== '');
-    
-    for (const line of lines) {
-      try {
-        const parsedLine = JSON.parse(line);
-        fullResponse += parsedLine.response;
-        
-        if (parsedLine.done) {
-          return fullResponse.trim();
-        }
-      } catch (error) {
-        console.error("Error parsing line:", error);
+  for (const line of lines) {
+    try {
+      const parsedLine = JSON.parse(line);
+      fullResponse += parsedLine.response;
+
+      if (parsedLine.done) {
+        return fullResponse.trim();
       }
+    } catch (error) {
+      console.error("Error parsing line:", error);
     }
   }
 

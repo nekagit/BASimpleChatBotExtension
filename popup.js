@@ -36,11 +36,24 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const data = await response.json();
-      console.log(data);
-      alert(data.choices[0].text);
+      console.log(data.answer);
     } catch (error) {
       console.error('Error:', error);
       alert('An error occurred while processing your request.');
+    }
+  });
+});
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleApiInputCheckbox = document.getElementById("toggle-api-input");
+  const apiKeyInputDiv = document.getElementById("api-key-input");
+
+  toggleApiInputCheckbox.addEventListener("change", () => {
+    if (toggleApiInputCheckbox.checked) {
+      apiKeyInputDiv.style.display = "flex";
+      apiKeyInputDiv.style.opacity = 1;
+    } else {
+      apiKeyInputDiv.style.display = "none";
+      apiKeyInputDiv.style.opacity = 0;
     }
   });
 });
