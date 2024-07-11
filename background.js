@@ -30,7 +30,6 @@ function createInputBox() {
   inputContainer.style.width = "300px";
 
   // Style for response box
-  responseBox.style.position = "relative";
   responseBox.style.boxSizing = "border-box";
   responseBox.style.width = "100%";
   responseBox.style.marginBottom = "10px";
@@ -40,8 +39,10 @@ function createInputBox() {
   responseBox.style.borderRadius = "3px";
   responseBox.style.color = "white";
   responseBox.style.fontSize = "16px";
-  responseBox.style.display = "none"; // Hidden initially
-  responseBox.style.zIndex = "10001"; // Higher than the container
+  responseBox.style.display = "none";
+  responseBox.style.maxHeight = "200px"; // Set  max height
+  responseBox.style.overflowY = "auto"; // Add scrolling if content is too long
+
   // Style for input
   input.type = "text";
   input.placeholder = "Ask a question";
@@ -52,6 +53,7 @@ function createInputBox() {
   input.style.border = "1px solid gray";
   input.style.borderRadius = "3px";
   input.style.fontSize = "16px";
+
 
   inputContainer.appendChild(responseBox);
   inputContainer.appendChild(input);
@@ -75,12 +77,11 @@ function createInputBox() {
       });
 
       const data = await response.json();
+      console.log("Response received:", data.answer);
       responseBox.textContent = data.answer;
-      responseBox.style.display = "block !important";
-      responseBox.offsetHeight; // Force layout update
-
+      responseBox.style.display = "block";
       console.log("Response box should now be visible");
-      console.log("Response box content:", responseBox.textContent); // Debug log
+      console.log("Response box content:", responseBox.textContent);
     } catch (error) {
       console.error("Error:", error);
       alert("An error occurred while processing your request.");
