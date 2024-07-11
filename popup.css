@@ -98,3 +98,18 @@ h1 {
 .search-button:hover {
   background-color: #555;
 }
+
+
+.response-box {
+  box-sizing: border-box;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #222;
+  border: 1px solid gray;
+  border-radius: 3px;
+  color: white;
+  font-size: 16px;
+  max-height: 200px;
+  overflow-y: auto;
+}

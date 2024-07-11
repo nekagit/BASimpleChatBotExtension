@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
 document.addEventListener("DOMContentLoaded", () => {
   const toggleApiInputCheckbox = document.getElementById("toggle-api-input");
   const apiKeyInputDiv = document.getElementById("api-key-input");
