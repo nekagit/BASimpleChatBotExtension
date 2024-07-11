@@ -18,13 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   askQuestionButton.addEventListener('click', async () => {
-    const apiKey = localStorage.getItem('openai-api-key');
     const question = questionInput.value;
 
-    if (!apiKey) {
-      alert('API key is not set');
-      return;
-    }
     if (!question) {
       alert('Please enter a question');
       return;
@@ -32,19 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Make a request to OpenAI
     try {
-     const response = await fetch('https://api.openai.com/v1/chat/completions', {
+       const response = await fetch('http://localhost:3000/query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
         },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: question }],
-          max_tokens: 150,
-        }),
+        body: JSON.stringify({ question }),
       });
-
 
       const data = await response.json();
       console.log(data);

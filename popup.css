@@ -1,5 +1,5 @@
 body {
-  background-color: #121212;
+  background-color: rgb(99, 154, 0);
   color: #e0e0e0;
 }
 
@@ -9,7 +9,7 @@ body {
   margin: 0 auto;
   padding: 20px;
   text-align: center;
-  background-color: #1e1e1e;
+  background-color: rgb(99, 154, 0);
   border-radius: 8px;
 }
 
@@ -33,7 +33,7 @@ h1 {
 }
 
 .info-box {
-  background-color: #2a2a2a;
+  background-color: rgb(99, 154, 0);
   border-radius: 5px;
   padding: 10px;
   font-size: 12px;
