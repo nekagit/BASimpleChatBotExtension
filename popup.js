@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const questionInput = document.getElementById('question');
   const saveApiKeyButton = document.getElementById('save-api-key');
   const askQuestionButton = document.getElementById('ask-question');
+  const responseBox = document.getElementById('response-box');
 
   // Load saved API key from localStorage
   apiKeyInput.value = localStorage.getItem('openai-api-key') || '';
@@ -27,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Make a request to OpenAI
     try {
-       const response = await fetch('http://localhost:3000/query', {
+      const response = await fetch('http://localhost:3000/query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,7 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const data = await response.json();
-      console.log(data.answer);
+      responseBox.textContent = data.answer;
+      responseBox.style.display = 'block';
+      console.log('Response received:', data.answer);
     } catch (error) {
       console.error('Error:', error);
       alert('An error occurred while processing your request.');
@@ -44,16 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  const toggleApiInputCheckbox = document.getElementById("toggle-api-input");
-  const apiKeyInputDiv = document.getElementById("api-key-input");
+document.addEventListener('DOMContentLoaded', () => {
+  const toggleApiInputCheckbox = document.getElementById('toggle-api-input');
+  const apiKeyInputDiv = document.getElementById('api-key-input');
 
-  toggleApiInputCheckbox.addEventListener("change", () => {
+  toggleApiInputCheckbox.addEventListener('change', () => {
     if (toggleApiInputCheckbox.checked) {
-      apiKeyInputDiv.style.display = "flex";
+      apiKeyInputDiv.style.display = 'flex';
       apiKeyInputDiv.style.opacity = 1;
     } else {
-      apiKeyInputDiv.style.display = "none";
+      apiKeyInputDiv.style.display = 'none';
       apiKeyInputDiv.style.opacity = 0;
     }
   });
