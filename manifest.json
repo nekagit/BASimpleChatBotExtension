@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "Input Box Opener",
   "version": "1.0",
-  "permissions": ["activeTab", "scripting"],
-  "host_permissions": ["https://api.openai.com/"],
+  "permissions": ["activeTab", "scripting", "downloads"],
+  "host_permissions": ["https://api.openai.com/", "http://localhost:3000/"],
   "background": {
     "service_worker": "background.js"
   },
@@ -13,6 +13,12 @@
         "default": "Alt+S"
       },
       "description": "Open input box"
+    },
+    "show_pdf_list": {
+      "suggested_key": {
+        "default": "Alt+A"
+      },
+      "description": "Show a list of the PDFs in the current page"
     }
   },
   "action": {

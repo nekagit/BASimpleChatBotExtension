@@ -8,6 +8,69 @@ chrome.commands.onCommand.addListener((command) => {
     });
   }
 });
+//////////////
+
+let inputBoxDisplayed = false;
+let responseBoxDisplayed = false;
+
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("Extension installed or updated.");
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  console.log("Extension started.");
+});
+
+function findPDFs() {
+  return new Promise((resolve) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tab = tabs[0];
+      chrome.scripting.executeScript(
+        {
+          target: { tabId: tab.id },
+          func: () => {
+            return Array.from(document.querySelectorAll('a[href$=".pdf"]')).map((link) => link.href);
+          },
+        },
+        (results) => {
+          resolve(results && results[0] && results[0].result ? results[0].result : []);
+        }
+      );
+    });
+  });
+}
+
+chrome.commands.onCommand.addListener(async (command) => {
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  const tabId = tabs[0].id;
+
+  if (command === "open_input_box") {
+    if (inputBoxDisplayed) {
+      chrome.tabs.sendMessage(tabId, { action: "removeInputBox" });
+      inputBoxDisplayed = false;
+    } else {
+      chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        func: createInputBox,
+      });
+      inputBoxDisplayed = true;
+    }
+  } else if (command === "show_pdf_list") {
+    const pdfLinks = await findPDFs();
+    if (responseBoxDisplayed) {
+      chrome.tabs.sendMessage(tabId, { action: "removeResponseBox" });
+      responseBoxDisplayed = false;
+    } else {
+      chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        func: showPDFList,
+        args: [pdfLinks],
+      });
+      responseBoxDisplayed = true;
+    }
+  }
+});
+/////
 
 function createInputBox() {
   const inputContainer = document.createElement("div");
@@ -54,7 +117,6 @@ function createInputBox() {
   input.style.borderRadius = "3px";
   input.style.fontSize = "16px";
 
-
   inputContainer.appendChild(responseBox);
   inputContainer.appendChild(input);
   document.body.appendChild(inputContainer);
@@ -94,9 +156,45 @@ function createInputBox() {
       handleInputSubmit();
     }
   });
+  
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "removeInputBox") {
+      inputContainer.remove();
+    }
+  });
+}
+function showPDFList(pdfLinks) {
+  const responseBox = document.createElement("div");
+  responseBox.id = "extension-response-box";
 
-  // Do not remove the input box when it loses focus
-  input.onblur = function () {
-    // No operation to keep the input box
-  };
+  // Style for response box
+  responseBox.style.position = "fixed";
+  responseBox.style.top = "50%";
+  responseBox.style.left = "50%";
+  responseBox.style.transform = "translate(-50%, -50%)";
+  responseBox.style.zIndex = "10000";
+  responseBox.style.boxSizing = "border-box";
+  responseBox.style.width = "300px";
+  responseBox.style.padding = "10px";
+  responseBox.style.backgroundColor = "#222";
+  responseBox.style.border = "1px solid gray";
+  responseBox.style.borderRadius = "5px";
+  responseBox.style.color = "white";
+  responseBox.style.fontSize = "16px";
+  responseBox.style.maxHeight = "400px";
+  responseBox.style.overflowY = "auto";
+
+  if (pdfLinks.length > 0) {
+    responseBox.innerHTML = "<strong>Available PDFs:</strong><br>" + pdfLinks.map(link => `<a href="${link}" style="color: #add8e6;">${link}</a>`).join("<br>");
+  } else {
+    responseBox.textContent = "No PDF links found on the page.";
+  }
+
+  document.body.appendChild(responseBox);
+
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "removeResponseBox") {
+      responseBox.remove();
+    }
+  });
 }
