@@ -29,7 +29,13 @@ function findPDFs() {
         {
           target: { tabId: tab.id },
           func: () => {
-            return Array.from(document.querySelectorAll('a[href$=".pdf"]')).map((link) => link.href);
+            const pdfLinks = Array.from(
+              document.querySelectorAll('a[href$=".pdf"]')
+            ).map((link) => ({
+              url: link.href,
+              name: link.innerText.trim() || link.href,
+            }));
+            return pdfLinks;
           },
         },
         (results) => {
@@ -70,7 +76,6 @@ chrome.commands.onCommand.addListener(async (command) => {
     }
   }
 });
-/////
 
 function createInputBox() {
   const inputContainer = document.createElement("div");
@@ -163,6 +168,7 @@ function createInputBox() {
     }
   });
 }
+
 function showPDFList(pdfLinks) {
   const responseBox = document.createElement("div");
   responseBox.id = "extension-response-box";
@@ -174,7 +180,7 @@ function showPDFList(pdfLinks) {
   responseBox.style.transform = "translate(-50%, -50%)";
   responseBox.style.zIndex = "10000";
   responseBox.style.boxSizing = "border-box";
-  responseBox.style.width = "300px";
+  responseBox.style.width = "500px";
   responseBox.style.padding = "10px";
   responseBox.style.backgroundColor = "#222";
   responseBox.style.border = "1px solid gray";
@@ -185,7 +191,7 @@ function showPDFList(pdfLinks) {
   responseBox.style.overflowY = "auto";
 
   if (pdfLinks.length > 0) {
-    responseBox.innerHTML = "<strong>Available PDFs:</strong><br>" + pdfLinks.map(link => `<a href="${link}" style="color: #add8e6;">${link}</a>`).join("<br>");
+    responseBox.innerHTML = "<strong>Available PDFs:</strong><button>Feed PDF to LLM</button><br> " + pdfLinks.map(link => `<input type="checkbox" value="${link.url}"><a href="${link.url}" target="_blank" style="color: #add8e6;padding-bottom:4rem; cursor: pointer;" onclick="openPDF(event, '${link.url}');">${link.name}</a>`).join("<br>");
   } else {
     responseBox.textContent = "No PDF links found on the page.";
   }
@@ -197,4 +203,10 @@ function showPDFList(pdfLinks) {
       responseBox.remove();
     }
   });
+}
+
+// Function to open PDF link in a new tab
+function openPDF(event, url) {
+  event.preventDefault();
+  chrome.tabs.create({ url, active: true }); // Open the URL in a new tab
 }
