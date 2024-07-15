@@ -39,7 +39,9 @@ function findPDFs() {
           },
         },
         (results) => {
-          resolve(results && results[0] && results[0].result ? results[0].result : []);
+          resolve(
+            results && results[0] && results[0].result ? results[0].result : []
+          );
         }
       );
     });
@@ -161,14 +163,13 @@ function createInputBox() {
       handleInputSubmit();
     }
   });
-  
+
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "removeInputBox") {
       inputContainer.remove();
     }
   });
 }
-
 function showPDFList(pdfLinks) {
   const responseBox = document.createElement("div");
   responseBox.id = "extension-response-box";
@@ -181,7 +182,7 @@ function showPDFList(pdfLinks) {
   responseBox.style.zIndex = "10000";
   responseBox.style.boxSizing = "border-box";
   responseBox.style.width = "500px";
-  responseBox.style.padding = "10px";
+  responseBox.style.padding = "20px";
   responseBox.style.backgroundColor = "#222";
   responseBox.style.border = "1px solid gray";
   responseBox.style.borderRadius = "5px";
@@ -191,7 +192,59 @@ function showPDFList(pdfLinks) {
   responseBox.style.overflowY = "auto";
 
   if (pdfLinks.length > 0) {
-    responseBox.innerHTML = "<strong>Available PDFs:</strong><button>Feed PDF to LLM</button><br> " + pdfLinks.map(link => `<input type="checkbox" value="${link.url}"><a href="${link.url}" target="_blank" style="color: #add8e6;padding-bottom:4rem; cursor: pointer;" onclick="openPDF(event, '${link.url}');">${link.name}</a>`).join("<br>");
+    responseBox.innerHTML = `
+    <div style="display: flex; flex-direction: row;justify-content: space-around;align-items:center; margin-bottom: 16px;">
+      <strong>Available PDFs:</strong>
+       <button id="feedButton" style="padding: 8px 16px; margin-top: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">Feed PDFs to LLM</button>
+      </div>
+       <br>
+      ${pdfLinks
+        .map(
+          (link) => `
+        <div style="display: flex; align-items: center;">
+          <input type="checkbox" id="pdfCheckbox-${link.url}" value="${link.url}">
+          <label for="pdfCheckbox-${link.url}" style="margin-left: 8px;">
+            <a href="#" style="color: #add8e6; cursor: pointer;" onclick="openPDF(event, '${link.url}');">${link.name}</a>
+          </label>
+        </div>
+      `
+        )
+        .join("<br>")}
+    `;
+
+    // Button click event to handle feeding PDFs to LLM
+    const feedButton = responseBox.querySelector("#feedButton");
+    feedButton.addEventListener("click", async () => {
+      const selectedPDFs = [];
+      pdfLinks.forEach((link) => {
+        const checkbox = document.getElementById(`pdfCheckbox-${link.url}`);
+        if (checkbox.checked) {
+          selectedPDFs.push(link.url);
+        }
+      });
+
+      if (selectedPDFs.length === 0) {
+        alert("Please select at least one PDF to feed to LLM.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:3000/feed_llm", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ pdfs: selectedPDFs }),
+        });
+
+        const data = await response.json();
+        console.log("LLM feeding response:", data);
+        alert("PDFs fed to LLM successfully.");
+      } catch (error) {
+        console.error("Error feeding PDFs to LLM:", error);
+        alert("An error occurred while feeding PDFs to LLM.");
+      }
+    });
   } else {
     responseBox.textContent = "No PDF links found on the page.";
   }
@@ -204,7 +257,6 @@ function showPDFList(pdfLinks) {
     }
   });
 }
-
 // Function to open PDF link in a new tab
 function openPDF(event, url) {
   event.preventDefault();
