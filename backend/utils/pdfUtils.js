@@ -16,7 +16,6 @@ export async function downloadAndParsePDF(url) {
 
     // Parse PDF pages
     const pdfData = await pdfParsePages(pdfBuffer);
-    console.log(pdfData.text)
     const text = pdfData.text
     // Save the PDF temporarily to use with tabula-js
     const tempPdfPath = path.join(__dirname, "temp.pdf");
