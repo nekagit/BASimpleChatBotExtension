@@ -9,6 +9,7 @@ router.post("/", async (req, res) => {
     return res.status(400).send("Question is required");
   }
   try {
+    console.log(question)
     const answer = await queryLocalLLM(question);
     res.json({ answer });
   } catch (error) {

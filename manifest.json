@@ -5,7 +5,8 @@
   "permissions": ["activeTab", "scripting", "downloads"],
   "host_permissions": ["https://api.openai.com/", "http://localhost:3000/"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "commands": {
     "open_input_box": {
