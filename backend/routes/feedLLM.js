@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
       // Table data:
       // ${allTables.join("\n\n")}
     console.log("response incomming");
-    console.log(allTables);
+    // console.log(allTables);
     // Feed the combined data to the LLM
     const response = await queryLocalLLM(combinedData)
     console.log(response);
