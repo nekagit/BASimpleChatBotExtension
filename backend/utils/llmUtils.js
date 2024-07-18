@@ -2,29 +2,28 @@ import fetch from "node-fetch";
 
 // docker run -v C:\Users\Nenad\Desktop\git\BA\simpleChat\backend:/app rasa/rasa init --no-prompt
 // docker run -v C:\Users\Nenad\Desktop\git\BA\simpleChat\backend:/app -p 5005:5005 rasa/rasa run --enable-api --cors "*" --debug
+  // Request to Rasa
+  // const responseR = await fetch("http://localhost:5005/webhooks/rest/webhook", {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({
+  //     sender: "test_user",
+  //     message: question,
+  //   }),
+  // });
 
 export async function queryLocalLLM(question) {
-  const responseLLama3 = await fetch("http://localhost:11434/api/generate", {
+  const response = await fetch("http://localhost:11434/api/generate", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
       model: "llama3",
-      prompt: question,
+      prompt: question  + " (Please respond in 3 sentences or less.)",
       stream: true,
-    }),
-  });
-
-  // Request to Rasa
-  const response = await fetch("http://localhost:5005/webhooks/rest/webhook", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      sender: "test_user",
-      message: question + " (Please respond in 3 sentences or less.)",
     }),
   });
 

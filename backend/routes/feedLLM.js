@@ -20,7 +20,7 @@ router.post("/", async (req, res) => {
 
     // Combine text and table data
     const combinedData = `
-      (this following data is for u so i can ask you about it later, if all ok respond just with the word OK if not respond with Error)
+      (What is this following text about?)
       ${combinedText}
 
       `;
