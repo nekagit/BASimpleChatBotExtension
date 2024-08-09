@@ -21,7 +21,7 @@ export async function queryLocalLLM(question) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "llama3",
+      model: "llama3.1",
       prompt: question  + " (Please respond in 3 sentences or less.)",
       stream: true,
     }),

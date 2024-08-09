@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Input Box Opener",
   "version": "1.0",
-  "permissions": ["activeTab", "scripting", "downloads"],
+  "permissions": ["activeTab", "scripting", "downloads", "https://api.openai.com/"],
   "host_permissions": ["https://api.openai.com/", "http://localhost:3000/"],
   "background": {
     "service_worker": "background.js",
