@@ -3,7 +3,6 @@ import { createInputBox, findPDFs, showPDFList } from './content.js';
 let inputBoxDisplayed = false;
 let responseBoxDisplayed = false;
 
-//////////////
 
 chrome.commands.onCommand.addListener((command) => {
   if (command === "open_input_box") {
